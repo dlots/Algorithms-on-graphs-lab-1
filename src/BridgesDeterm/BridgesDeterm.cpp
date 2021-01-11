@@ -38,17 +38,18 @@ void bridges_determ_dfs(uint64_t vertex)
         {
             bridges_determ_dfs(adjacent);
             M[vertex] = std::min(M[vertex], M[adjacent]);
-            if (M[adjacent] >= entry[vertex])
+            if (M[adjacent] > entry[vertex])
             {
                 bridges_output << "(" << vertex << "," << adjacent << "),";
             }
         }
-        else if ((colors[adjacent] == gray) && not_parent)
+        else if (not_parent)
         {
             M[vertex] = std::min(M[vertex], entry[adjacent]);
         }
     }
     colors[vertex] = black;
+    history.pop_back();
 }
 
 const char* cpp_compute_bridges_determ(char* adj_list, uint64_t len)
