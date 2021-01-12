@@ -1,6 +1,6 @@
 #include "BucketSort.h"
 
-void insertion_sort(std::vector<bucket_item>& bucket)
+void insertion_sort(vector<bucket_item>& bucket)
 {
     for (size_t i = 1; i < bucket.size(); ++i)
     {
@@ -17,7 +17,7 @@ void insertion_sort(std::vector<bucket_item>& bucket)
 
 uint64_t* cpp_bucket_sort(uint64_t* arr, uint64_t len)
 {
-    std::vector<bucket_item> buckets[len];
+    vector<bucket_item> buckets[len];
 
     uint64_t min = ULONG_MAX;
     uint64_t max = 0;

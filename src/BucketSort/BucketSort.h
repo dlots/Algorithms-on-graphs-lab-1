@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include <vector>
+using namespace std;
 
 struct bucket_item
 {
