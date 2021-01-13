@@ -4,14 +4,14 @@ void insertion_sort(vector<bucket_item>& bucket)
 {
     for (size_t i = 1; i < bucket.size(); ++i)
     {
-       bucket_item item = bucket[i];
-       size_t j = i;
-       while ((j > 0) && (bucket[j-1].value > item.value))
-       {
-          bucket[j] = bucket[j-1];
-          --j;
-       }
-       bucket[j] = item;
+        bucket_item item = bucket[i];
+        size_t j = i;
+        while ((j > 0) && (bucket[j-1].value > item.value))
+        {
+            bucket[j] = bucket[j-1];
+            --j;
+        }
+        bucket[j] = item;
     }
 }
 
@@ -48,7 +48,7 @@ uint64_t* cpp_bucket_sort(uint64_t* arr, uint64_t len)
         }
     }
 
-    for (auto bucket : buckets)
+    for (auto& bucket : buckets)
     {
         insertion_sort(bucket);
     }

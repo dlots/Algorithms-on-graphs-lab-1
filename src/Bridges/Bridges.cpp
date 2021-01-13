@@ -215,15 +215,16 @@ const char* cpp_compute_2bridges_rand(char* adj_list, uint64_t len, int sort)
         }
     }
 
+    vector<uint64_t> samples_arr_copy = samples_arr;
     uint64_t* sorted_args;
 
     switch (sort)
     {
     case radix:
-        sorted_args = radix_sort(samples_arr.data(), samples_arr.size());
+        sorted_args = radix_sort(samples_arr_copy.data(), samples_arr_copy.size());
         break;
     case bucket:
-        sorted_args = cpp_bucket_sort(samples_arr.data(), samples_arr.size());
+        sorted_args = cpp_bucket_sort(samples_arr_copy.data(), samples_arr_copy.size());
         break;
     case quick:
 
@@ -235,16 +236,16 @@ const char* cpp_compute_2bridges_rand(char* adj_list, uint64_t len, int sort)
     for (size_t i = 0; i < samples_arr.size(); ++i)
     {
         ++cluster_count;
-        if (sorted_args[i] != sorted_args[i+1])
+        if (samples_arr[sorted_args[i]] != samples_arr[sorted_args[i+1]])
         {
             if (cluster_count > 1)
             {
                 bridges_output << "[";
                 for (size_t j = i - cluster_count + 1; j < i; ++j)
                 {
-                    bridges_output << "(" << edges[j].first << "," << edges[j].second << "),";
+                    bridges_output << "(" << edges[sorted_args[j]].first << "," << edges[sorted_args[j]].second << "),";
                 }
-                bridges_output << "(" << edges[i].first << "," << edges[i].second << ")],";
+                bridges_output << "(" << edges[sorted_args[i]].first << "," << edges[sorted_args[i]].second << ")],";
             }
             cluster_count = 0;
         }
@@ -252,6 +253,8 @@ const char* cpp_compute_2bridges_rand(char* adj_list, uint64_t len, int sort)
     string two_bridges_string(bridges_output.str());
     two_bridges_string.pop_back();
     two_bridges_string.push_back(']');
+
+    cout << two_bridges_string;
 
     return get_result_pointer(two_bridges_string);
 }
@@ -267,3 +270,12 @@ const char* compute_2bridges_rand(char* adj_list, uint64_t len, int sort)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+
+int main()
+{
+    std::string test = "(1,3,8,9)(0,7,10)(11)(0,4,8)(3,5,6,8,11)(4)(4,11)(1,8)(0,3,4,7)(0)(1)(2,4,6)";
+
+    cpp_compute_2bridges_rand(const_cast<char*>(test.c_str()), test.size(), 1);
+
+    return 0;
+}

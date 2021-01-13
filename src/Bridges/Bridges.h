@@ -27,8 +27,8 @@ enum color
 enum sort_method
 {
     radix = 0,
-    bucket,
-    quick
+    bucket = 1,
+    quick = 2
 };
 
 ////////////////////////////////////////////////////////////////////////////////
