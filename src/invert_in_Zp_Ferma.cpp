@@ -1,69 +1,109 @@
-#include <iostream>
-#include <random>
+#define __STDC_FORMAT_MACROS
 
-long fast_pow(int a, int p)
+#include <stdio.h>
+#include <limits.h>
+#include <stdint.h>
+#include <inttypes.h>
+#include <math.h>
+#include <random>
+#include <bitset>
+#include <iostream>
+using namespace std;
+
+uint64_t fast_pow_mod(uint64_t base, uint64_t C, uint64_t mod)
 {
-    if (p == 0)
+    uint64_t last_pow;
+    vector<uint64_t> result_pows;
+    //std::cout << std::bitset<64>(C) << endl;
+    uint64_t pow_2 = 1;
+    //uint64_t pow_2_mod = base % mod;
+    uint64_t result = 1;
+
+    last_pow = base % mod;
+    if ((C & pow_2) != 0)
     {
-        return 1;
+        result_pows.push_back(last_pow);
+        //std::cout << std::bitset<64>(pow_2) << std::endl;
+        //cout << pow_2 << endl;
     }
-    if (p == 1)
+
+    pow_2 <<= 1;
+
+    for (size_t i = 0; i < 63; ++i)
     {
-        return a;
+        last_pow = (last_pow * last_pow) % mod;
+        if ((C & pow_2) != 0)
+        {
+            //std::cout << std::bitset<64>(pow_2) << std::endl;
+            //cout << pow_2 << endl;
+            //result *= pow_2_mod;
+            result_pows.push_back(last_pow);
+        }
+        pow_2 <<= 1;
     }
-    
-    if (p % 2 == 0)
+
+    //cout << endl;
+
+    for (auto pow : result_pows)
     {
-        a = fast_pow(a, p/2);
-        return a * a;
+        //cout << pow << endl;
+        result = (result * pow) % mod;
+        //cout << result << endl << endl;
     }
-    else
-    {
-        return fast_pow(a, p-1) * a;
-    }
+
+    return result;
 }
 
-bool ferma_test(int p)
+bool ferma_test(uint64_t number)
 {
-    std::random_device rd; 
+    if (number == 1)
+    {
+        return false;
+    }
+
+    std::random_device rd;
     std::mt19937 mersenne(rd());
+    std::uniform_int_distribution<uint64_t> rand_int(1, USHRT_MAX);
+
     for (size_t i = 0; i < 100; )
     {
-        int random_number = mersenne();
-        if (random_number % p == 0)
+        uint64_t random_number = rand_int(mersenne);
+
+        if (random_number % number == 0)
         {
             continue;
         }
-        
-        if (fast_pow(random_number, p-1) % p != 1)
+
+        uint64_t a = fast_pow_mod(random_number,number - 1, number);
+
+        //if (fast_pow_mod(random_number,number - 1, number) != 1)
+        if (a != 1)
         {
             return false;
         }
-        
+
         ++i;
     }
+
     return true;
 }
 
-int main(int argc, char* argv[])
+uint64_t invert_Ferma(uint64_t p, uint64_t x)
 {
-    if (argc != 3)
-    {
-        std::cout << "Wrong parameters." << std::endl;
-        return -1;
-    }
-    
-    int p = atoi(argv[1]);
-    int x = atoi(argv[2]);
-    
     if (ferma_test(p))
     {
-        std::cout << fast_pow(x, p-2) % p;
+        return (fast_pow_mod(x, p-2, p));
     }
     else
     {
-        std::cout << 0;
+        return 0;
     }
-    
-    return 0;
+}
+
+int main()
+{
+    //uint64_t number = 53653;
+    uint64_t number = INT_MAX;
+
+    cout << endl << invert_Ferma(2147483647, 100);
 }
