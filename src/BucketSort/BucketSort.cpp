@@ -1,23 +1,9 @@
 #include "BucketSort.h"
-
-void insertion_sort(vector<bucket_item>& bucket)
-{
-    for (size_t i = 1; i < bucket.size(); ++i)
-    {
-        bucket_item item = bucket[i];
-        size_t j = i;
-        while ((j > 0) && (bucket[j-1].value > item.value))
-        {
-            bucket[j] = bucket[j-1];
-            --j;
-        }
-        bucket[j] = item;
-    }
-}
+#include "../misc.h"
 
 uint64_t* cpp_bucket_sort(uint64_t* arr, uint64_t len)
 {
-    vector<bucket_item> buckets[len];
+    vector<item> buckets[len];
 
     uint64_t min = ULONG_MAX;
     uint64_t max = 0;
@@ -35,22 +21,22 @@ uint64_t* cpp_bucket_sort(uint64_t* arr, uint64_t len)
 
     for (size_t i = 0; i < len; ++i)
     {
-        bucket_item item = bucket_item(arr[i], i);
+        item item_ = item(arr[i], i);
         float normalized = (float)(arr[i] - min) / (max - min);
         uint64_t bucket_number = len * normalized;
         if (bucket_number < len)
         {
-            buckets[bucket_number].push_back(item);
+            buckets[bucket_number].push_back(item_);
         }
         else
         {
-            buckets[len - 1].push_back(item);
+            buckets[len - 1].push_back(item_);
         }
     }
 
     for (auto& bucket : buckets)
     {
-        insertion_sort(bucket);
+        insertion_sort(bucket, 0, bucket.size());
     }
 
     uint64_t* indices = (uint64_t*)malloc(len * sizeof(uint64_t));
@@ -63,9 +49,9 @@ uint64_t* cpp_bucket_sort(uint64_t* arr, uint64_t len)
     size_t i = 0;
     for (auto bucket : buckets)
     {
-        for (auto item : bucket)
+        for (auto item_ : bucket)
         {
-            indices[i++] = item.index;
+            indices[i++] = item_.index;
         }
     }
 
