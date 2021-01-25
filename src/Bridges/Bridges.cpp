@@ -18,11 +18,15 @@ void parse_adj_list(char* adj_list, uint64_t len)
         if (next_char == '(')
         {
             ++vertex;
+            adj_map[vertex] = vector<uint64_t>();
         }
         else if ((next_char == ',') || (next_char == ')'))
         {
-            adj_map[vertex].push_back(stoi(number));
-            number.clear();
+            if (!number.empty())
+            {
+                adj_map[vertex].push_back(stoi(number));
+                number.clear();
+            }
         }
         else if (next_char == '\0')
         {
@@ -67,7 +71,14 @@ void bridges_determ_dfs(uint64_t vertex)
             M[vertex] = min(M[vertex], M[adjacent]);
             if (M[adjacent] > entry[vertex])
             {
-                bridges_output << "(" << vertex << "," << adjacent << "),";
+                if (vertex < adjacent)
+                {
+                    bridges_output << "(" << vertex << "," << adjacent << "),";
+                }
+                else
+                {
+                    bridges_output << "(" << adjacent << "," << vertex << "),";
+                }
             }
         }
         else if ((history.size() < 2) || (history[history.size() - 2] != adjacent))
@@ -91,17 +102,28 @@ const char* cpp_compute_bridges_determ(char* adj_list, uint64_t len)
     entry = vector<size_t>(adj_map.size(), 0);
 
     bridges_output << "[";
-    bridges_determ_dfs(0);
+
+    for (const auto vertex : adj_map)
+    {
+        if (colors[vertex.first] == white)
+        {
+            bridges_determ_dfs(vertex.first);
+        }
+    }
+
     string bridges_string(bridges_output.str());
     bridges_string.pop_back();
     bridges_string.push_back(']');
+
+    cout << bridges_string;
 
     return get_result_pointer(bridges_string);
 }
 
 const char* compute_bridges_determ(char* adj_list, uint64_t len)
 {
-    return cpp_compute_bridges_determ(adj_list, len);
+    cpp_compute_bridges_determ(adj_list, len);
+    return const_cast<const char*>(adj_list);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -188,11 +210,11 @@ const char* cpp_compute_bridges_rand(char* adj_list, uint64_t len)
     {
         bridges_output << "(" << pair.first << "," << pair.second << "),";
     }
-    string bridges_string(bridges_output.str());
-    bridges_string.pop_back();
-    bridges_string.push_back(']');
+    string* bridges_string = new string(bridges_output.str());
+    bridges_string->pop_back();
+    bridges_string->push_back(']');
 
-    return get_result_pointer(bridges_string);
+    return bridges_string->c_str();
 }
 
 const char* cpp_compute_2bridges_rand(char* adj_list, uint64_t len, int sort)
@@ -261,21 +283,23 @@ const char* cpp_compute_2bridges_rand(char* adj_list, uint64_t len, int sort)
 
 const char* compute_bridges_rand(char* adj_list, uint64_t len)
 {
-    return cpp_compute_bridges_rand(adj_list, len);
+    //return cpp_compute_bridges_rand(adj_list, len);
+    return adj_list;
 }
 
 const char* compute_2bridges_rand(char* adj_list, uint64_t len, int sort)
 {
-    return cpp_compute_2bridges_rand(adj_list, len, sort);
+    //return cpp_compute_2bridges_rand(adj_list, len, sort);
+    return adj_list;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 int main()
 {
-    std::string test = "(1,3,8,9)(0,7,10)(11)(0,4,8)(3,5,6,8,11)(4)(4,11)(1,8)(0,3,4,7)(0)(1)(2,4,6)";
+    std::string test = "()()()()()(63,90)(51)(58)(59)()(63)(43,79)()(54)()()()()()(29,77)()(51)()()(98)(63,94)(83)()(61)(19,81)(58)()()()()()()(66)()(98)()()(93)(11)()(69)(60)(99)()()(55)(6,21)()(72)(13)(50,73)()()(7,30,97)(8)(46)(28,67)()(5,10,25)()(73)(37)(61)()(45)()(95)(53)(55,65)()()()(19)()(11)(90)(29)()(26)()()()()()()(5,80)()()(42)(25)(71)()(58)(24,39)(47)";
 
-    cpp_compute_2bridges_rand(const_cast<char*>(test.c_str()), test.size(), 2);
+    cpp_compute_bridges_determ(const_cast<char*>(test.c_str()), test.size());
 
     return 0;
 }
