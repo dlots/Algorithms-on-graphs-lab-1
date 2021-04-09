@@ -1,0 +1,22 @@
+name: build_so
+
+on: [push]
+
+jobs:
+  build_so_job:
+    runs-on: ubuntu-latest
+    steps:   
+      - uses: actions/checkout@v2
+      
+      - name: build_so
+        run: |
+          ./build.sh
+      
+      - name: upload_so
+        uses: actions/upload-artifact@v2
+        with:
+          name: so_artifact
+          path: so/Bridges.so
+          retention-days: 1
+        
+  
