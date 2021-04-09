@@ -10,6 +10,7 @@ jobs:
       
       - name: build_so
         run: |
+          chmod +x ./build_so.sh
           ./build_so.sh
       
       - name: upload_so
