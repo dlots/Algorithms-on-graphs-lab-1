@@ -10,7 +10,7 @@ jobs:
       
       - name: build_so
         run: |
-          ./build.sh
+          ./build_so.sh
       
       - name: upload_so
         uses: actions/upload-artifact@v2
